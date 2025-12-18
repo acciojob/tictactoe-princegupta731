@@ -1,50 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
+ <!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Tic Tac Toe</title>
-
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      font-family: Arial;
       display: flex;
       justify-content: center;
-      margin-top: 40px;
+      margin-top: 30px;
     }
 
     .container {
-      background: white;
-      padding: 20px;
-      width: 300px;
       text-align: center;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-
-    input {
-      width: 90%;
-      padding: 8px;
-      margin: 8px 0;
-    }
-
-    button {
-      padding: 8px 15px;
-      cursor: pointer;
     }
 
     .board {
       display: grid;
       grid-template-columns: repeat(3, 80px);
-      grid-gap: 5px;
-      justify-content: center;
+      gap: 5px;
       margin-top: 20px;
     }
 
     .cell {
       width: 80px;
       height: 80px;
-      border: 2px solid black;
+      border: 1px solid black;
       font-size: 40px;
       display: flex;
       align-items: center;
@@ -52,13 +32,13 @@
       cursor: pointer;
     }
 
+    .hidden {
+      display: none;
+    }
+
     .message {
       margin-top: 15px;
       font-size: 18px;
-    }
-
-    .hidden {
-      display: none;
     }
   </style>
 </head>
@@ -66,89 +46,77 @@
 <body>
   <div class="container">
 
-    <!-- Player Input Section -->
-    <div id="player-form">
-      <input type="text" id="player-1" placeholder="Enter Player 1 name">
-      <input type="text" id="player-2" placeholder="Enter Player 2 name">
-      <button id="submit">Submit</button>
-    </div>
+    <!-- h1 must be visible initially -->
+    <h1>Tic Tac Toe</h1>
 
-    <!-- Game Section -->
-    <div id="game" class="hidden">
-      <h1>Tic Tac Toe</h1>
-      <div class="message"></div>
+    <!-- Player form -->
+    <input id="player1" placeholder="Player 1" />
+    <input id="player2" placeholder="Player 2" />
+    <button id="submit">Submit</button>
 
-      <div class="board">
-        <div class="cell" id="1"></div>
-        <div class="cell" id="2"></div>
-        <div class="cell" id="3"></div>
-        <div class="cell" id="4"></div>
-        <div class="cell" id="5"></div>
-        <div class="cell" id="6"></div>
-        <div class="cell" id="7"></div>
-        <div class="cell" id="8"></div>
-        <div class="cell" id="9"></div>
-      </div>
+    <div class="message"></div>
+
+    <!-- Board -->
+    <div class="board hidden" id="board">
+      <div class="cell" id="1"></div>
+      <div class="cell" id="2"></div>
+      <div class="cell" id="3"></div>
+      <div class="cell" id="4"></div>
+      <div class="cell" id="5"></div>
+      <div class="cell" id="6"></div>
+      <div class="cell" id="7"></div>
+      <div class="cell" id="8"></div>
+      <div class="cell" id="9"></div>
     </div>
 
   </div>
 
   <script>
-    let player1 = "";
-    let player2 = "";
-    let currentPlayer = "X";
+    let p1 = "";
+    let p2 = "";
+    let turn = "x";
     let gameOver = false;
 
-    const submitBtn = document.getElementById("submit");
-    const messageDiv = document.querySelector(".message");
+    const message = document.querySelector(".message");
+    const board = document.getElementById("board");
     const cells = document.querySelectorAll(".cell");
 
-    submitBtn.addEventListener("click", () => {
-      player1 = document.getElementById("player-1").value;
-      player2 = document.getElementById("player-2").value;
+    document.getElementById("submit").onclick = () => {
+      p1 = document.getElementById("player1").value;
+      p2 = document.getElementById("player2").value;
 
-      if (player1 === "" || player2 === "") {
-        alert("Please enter both player names");
-        return;
-      }
-
-      document.getElementById("player-form").classList.add("hidden");
-      document.getElementById("game").classList.remove("hidden");
-
-      messageDiv.textContent = `${player1}, you're up`;
-    });
+      board.classList.remove("hidden");
+      message.textContent = `${p1}, you're up`;
+    };
 
     cells.forEach(cell => {
-      cell.addEventListener("click", () => {
-        if (cell.textContent !== "" || gameOver) return;
+      cell.onclick = () => {
+        if (cell.textContent || gameOver) return;
 
-        cell.textContent = currentPlayer;
+        cell.textContent = turn;
 
-        if (checkWinner()) {
-          let winner = currentPlayer === "X" ? player1 : player2;
-          messageDiv.textContent = `${winner} congratulations you won!`;
+        if (checkWin()) {
+          const winner = turn === "x" ? p1 : p2;
+          message.textContent = `${winner} congratulations you won!`;
           gameOver = true;
           return;
         }
 
-        currentPlayer = currentPlayer === "X" ? "O" : "X";
-        let nextPlayer = currentPlayer === "X" ? player1 : player2;
-        messageDiv.textContent = `${nextPlayer}, you're up`;
-      });
+        turn = turn === "x" ? "o" : "x";
+        message.textContent = `${turn === "x" ? p1 : p2}, you're up`;
+      };
     });
 
-    function checkWinner() {
-      const winPatterns = [
+    function checkWin() {
+      const wins = [
         ["1","2","3"], ["4","5","6"], ["7","8","9"],
         ["1","4","7"], ["2","5","8"], ["3","6","9"],
         ["1","5","9"], ["3","5","7"]
       ];
 
-      return winPatterns.some(pattern => {
-        return pattern.every(id => {
-          return document.getElementById(id).textContent === currentPlayer;
-        });
-      });
+      return wins.some(p =>
+        p.every(id => document.getElementById(id).textContent === turn)
+      );
     }
   </script>
 </body>
